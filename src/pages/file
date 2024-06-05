@@ -1,0 +1,56 @@
+const handleSubmit = (e) => {
+        e.preventDefault();
+
+        // Check if any row has all fields empty
+        const isEmptyRow = (item) => 
+            !item.category.trim() && 
+            !item.code.trim() && 
+            !item.description.trim() && 
+            !item.orderQty.trim() && 
+            !item.aprdQty.trim() && 
+            !item.rate.toString().trim() && 
+            !item.discount.toString().trim() && 
+            !item.amount.toString().trim() && 
+            !item.status.trim();
+
+        // Filter out completely empty rows
+        const nonEmptyRows = tableData.filter(item => !isEmptyRow(item));
+
+        // Check if any non-empty row has empty fields
+        const hasEmptyFields = nonEmptyRows.some(item => 
+            !item.category.trim() || 
+            !item.code.trim() || 
+            !item.description.trim() || 
+            !item.orderQty.trim() || 
+            !item.aprdQty.trim() || 
+            !item.rate.toString().trim() || 
+            !item.discount.toString().trim() || 
+            !item.amount.toString().trim() || 
+            !item.status.trim()
+        );
+
+        if (hasEmptyFields) {
+            const userConfirmed = window.confirm("There are empty fields. Do you want to submit the form anyway?");
+            if (!userConfirmed) {
+                alert('Please fill out all fields before submitting.');
+                return;
+            }
+        }
+
+        const data = nonEmptyRows.map((item) => ({
+            category: item.category,
+            code: item.code,
+            description: item.description,
+            orderQty: item.orderQty,
+            aprdQty: item.aprdQty,
+            rate: item.rate,
+            discount: item.discount,
+            amount: item.amount,
+            status: item.status
+        }));
+
+        console.log(data);
+        // setError(''); // Clear any previous error messages
+        setTableData(nonEmptyRows); // Update the state to remove any completely empty rows
+    };
+    
