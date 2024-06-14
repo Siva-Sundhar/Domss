@@ -1,7 +1,7 @@
 // import OrderForm from "./pages/OrderForm"
 
-import Select from "./others/Select"
-// import Form  from "./pages/Form"
+// import Select from "./others/Select"
+import Form  from "./pages/Form"
 // import ProductSubForm from "./pages/ProductSubForm"
 
 // import TodoForm from "./pages/TodoForm"
@@ -9,11 +9,11 @@ import Select from "./others/Select"
 const App = () => {
   return (
     <>
-      {/* <Form /> */}
+      <Form />
       {/* <ProductSubForm /> */}
       {/* <OrderForm /> */}
       {/* <TodoForm /> */}
-      <Select />
+      {/* <Select /> */}
     </>
   )
 }

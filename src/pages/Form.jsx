@@ -28,12 +28,18 @@ const Form = () => {
 		"Luxury Perfume",
 		"Soap",
 	]);
+	const [color,setColor] = useState('#EFEFEF')
+	const [voucherType, setVoucherType] = useState()
 	const [productData] = useState(ProductDescription)
 	const [prodFilter, setProdFilter] = useState([])
 	const [showProdList, setShowProdList] = useState(false);
 	const [showList, setShowList] = useState(false);
 	const [filteredOption, setFilteredOption] = useState(category);
-	const [selectIndex, setSelectIndex] = useState(0);
+	const [selectIndexCat, setSelectIndexCat] = useState(0);
+	const [selectIndexProd, setSelectIndexProd] = useState(0);
+	const [selectIndex, setSelectIndex] = useState(-1);
+
+
 	const inputRefs = useRef([])
 	const listRefs = useRef([])
 	
@@ -92,18 +98,31 @@ const Form = () => {
 	};
 	
 	const handleKeySelect = (e, index, options,property) => {
+		
 		if(selectIndex < options.length){
 			if (e.key === "ArrowUp" && selectIndex > 0) {
-				setSelectIndex(prev => prev - 1)
+				if (property === 'category') {
+                    setSelectIndexCat(prev => prev - 1);
+                    setSelectIndex(prev => prev - 1);
+                } else {
+                    setSelectIndexProd(prev => prev - 1);
+                    setSelectIndex(prev => prev - 1);
+				}
 			} else if (e.key === "ArrowDown" && selectIndex < options.length - 1) {
-				setSelectIndex(prev => prev + 1)
-			} else if (e.key === "Enter" && selectIndex >= 0) {
+				if (property === 'category') {
+                    setSelectIndexCat(prev => prev + 1);
+                    setSelectIndex(prev => prev + 1);
+                } else {
+                    setSelectIndexProd(prev => prev + 1);
+                    setSelectIndex(prev => prev + 1);
+                }
+			} else if (e.key === "Enter" && selectIndexCat >= 0) {
 				e.preventDefault()
 				handleSelect(property, options[selectIndex], index)
 				setTimeout(()=>{
 					inputRefs.current[index * 10 + (property === 'category' ? 1 : 2)].focus()
 				},0)
-				setSelectIndex(0)
+				
 			} else if(e.key === 'Tab') {
 				e.preventDefault();
 			}
@@ -111,7 +130,15 @@ const Form = () => {
 			setSelectIndex(0)
 		}
 	};
-	
+	const handleFocus = (property)=>{
+		if(property === 'category'){
+			setSelectIndex(selectIndexCat)
+			setShowList(true)
+		} else {
+			setSelectIndex(selectIndexProd)
+			setShowProdList(true)
+		}
+	}
 	
 	const handleChange = (e, index) => {
 		const { name, value } = e.target;
@@ -155,6 +182,22 @@ const Form = () => {
             }
         }
     };
+	const handleVoucher = (e)=>{
+		const { value } = e.target;
+		if(value === 'Purchase'){
+			setColor("#DFF5FF")
+			
+
+		} else if(value === 'Purchase Return'){
+			setColor("#E0FBE2")
+			
+
+		} else {
+			setColor("#EFEFEF")
+		}
+		setVoucherType(value);
+		
+	}
 	
 	const addRow = ()=>{
 		setTableData((prevData) => [
@@ -183,60 +226,60 @@ const Form = () => {
         e.preventDefault();
 
         // Check if any row has all fields empty
-        const isEmptyRow = (item) => 
-            !item.category.trim() && 
-            !item.code.trim() && 
-            !item.description.trim() && 
-            !item.orderQty.trim() && 
-            !item.aprdQty.trim() && 
-            !item.rate.toString().trim() && 
-            !item.discount.toString().trim() && 
-            !item.amount.toString().trim() && 
-            !item.status.trim();
+        // const isEmptyRow = (item) => 
+        //     !item.category.trim() && 
+        //     !item.code.trim() && 
+        //     !item.description.trim() && 
+        //     !item.orderQty.trim() && 
+        //     !item.aprdQty.trim() && 
+        //     !item.rate.toString().trim() && 
+        //     !item.discount.toString().trim() && 
+        //     !item.amount.toString().trim() && 
+        //     !item.status.trim();
 
-        // Filter out completely empty rows
-        const nonEmptyRows = tableData.filter(item => !isEmptyRow(item));
+        // // Filter out completely empty rows
+        // const nonEmptyRows = tableData.filter(item => !isEmptyRow(item));
 
-        // Check if any non-empty row has empty fields
-        const hasEmptyFields = nonEmptyRows.some(item => 
-            !item.category.trim() || 
-            !item.code.trim() || 
-            !item.description.trim() || 
-            !item.orderQty.trim() || 
-            !item.aprdQty.trim() || 
-            !item.rate.toString().trim() || 
-            !item.discount.toString().trim() || 
-            !item.amount.toString().trim() || 
-            !item.status.trim()
-        );
+        // // Check if any non-empty row has empty fields
+        // const hasEmptyFields = nonEmptyRows.some(item => 
+        //     !item.category.trim() || 
+        //     !item.code.trim() || 
+        //     !item.description.trim() || 
+        //     !item.orderQty.trim() || 
+        //     !item.aprdQty.trim() || 
+        //     !item.rate.toString().trim() || 
+        //     !item.discount.toString().trim() || 
+        //     !item.amount.toString().trim() || 
+        //     !item.status.trim()
+        // );
 
-        if (hasEmptyFields) {
-            const userConfirmed = window.confirm("There are empty fields. Do you want to submit the form anyway?");
-            if (!userConfirmed) {
-                alert('Please fill out all fields before submitting.');
-                return;
-            }
-        }
+        // if (hasEmptyFields) {
+        //     const userConfirmed = window.confirm("There are empty fields. Do you want to submit the form anyway?");
+        //     if (!userConfirmed) {
+        //         alert('Please fill out all fields before submitting.');
+        //         return;
+        //     }
+        // }
 
-        const data = nonEmptyRows.map((item) => ({
-            category: item.category,
-            code: item.code,
-            description: item.description,
-            orderQty: item.orderQty,
-            aprdQty: item.aprdQty,
-            rate: item.rate,
-            discount: item.discount,
-            amount: item.amount,
-            status: item.status
-        }));
+        // const data = nonEmptyRows.map((item) => ({
+        //     category: item.category,
+        //     code: item.code,
+        //     description: item.description,
+        //     orderQty: item.orderQty,
+        //     aprdQty: item.aprdQty,
+        //     rate: item.rate,
+        //     discount: item.discount,
+        //     amount: item.amount,
+        //     status: item.status
+        // }));
 
-        console.log(data);
-        // setError(''); // Clear any previous error messages
-        setTableData(nonEmptyRows); // Update the state to remove any completely empty rows
+        // console.log(data);
+        //  setError(''); // Clear any previous error messages
+        // setTableData(nonEmptyRows); // Update the state to remove any completely empty rows
     };
 	return (
 		<>
-			<form action="" className="bg-[#FCF6F5] h-screen px-0.5" onSubmit={handleSubmit}>
+			<form action="" style={{background:color}} className=" h-screen px-0.5" onSubmit={handleSubmit}>
 				<div className="flex justify-between ">
 					<div className=" w-[300px] py-3 px-1">
 						<div className="flex leading-4 mb-1">
@@ -244,11 +287,17 @@ const Form = () => {
 								Voucher Type
 							</label>
 							<div className="mr-0.5">:</div>
-							<input
-								type="text"
-								id="dob"
-								className=" w-2/3 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
-							/>
+								<select 
+								className="w-2/3 h-[18px] font-semibold text-[13px] border border-fuchsia-700 outline-0 bg-transparent"
+								id="voucherType"
+								onChange={handleVoucher}
+								value={voucherType}
+								>
+									<option value="Order Booking">Order Booking</option>
+									<option value="Purchase">Purchase</option>
+									<option value="Purchase Return">Purchase Return</option>
+									
+								</select>
 						</div>
 						<div className="flex leading-4 ">
 							<label htmlFor="dn" className="w-1/2 text-[14px]">
@@ -325,7 +374,7 @@ const Form = () => {
 									value={data.category}
 									onChange={(e) => handleChange(e, index)}
 									onKeyDown={(e)=>handleKeySelect(e, index, filteredOption,'category')}
-									onFocus={()=>setShowList(true)}
+									onFocus={()=>handleFocus('category')}
 									onBlur={()=>setShowList(false)}
 									ref={(el) => inputRefs.current[index * 10 + 0] = el}
 									className="w-full outline-0 text-center"
@@ -358,7 +407,7 @@ const Form = () => {
 									name="code"
 									value={data.code}
 									onChange={(e) => handleChange(e, index)}
-									onFocus={()=>setShowProdList(true)}
+									onFocus={()=>handleFocus('code')}
 									onBlur={()=>setShowProdList(false)}
 									onKeyDown={(e) => handleKeySelect(e, index, prodFilter, 'code')}
 									ref={(el) => inputRefs.current[index * 10 + 1] = el}
@@ -515,33 +564,22 @@ const Form = () => {
 							/>
 						</div>
 					</div>
-					<div className="w-[400px]">
+					<div className="w-[600px]">
 						<div className="flex leading-4 mb-1">
-							<label htmlFor="" className="w-2/5">
-								Approved By
+							<label htmlFor="" className="w-1/5">
+								Narration
 							</label>
 							<span className="mr-0.5">:</span>
-							<input
-								type="text"
-								className="w-3/5 border h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
+							<textarea
+								rows={2}
+								
+								type=""
+								className="w-4/5 border border-fuchsia-700 h-[36px] focus:bg-[#fee8af] resize-none focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
 							/>
 						</div>
-						<div className="flex leading-4 ">
-							<label htmlFor="" className="w-2/5">
-								Date
-							</label>
-							<span className="mr-0.5">:</span>
-							<input
-								type="text"
-								className="w-3/5 border h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
-							/>
-						</div>
+						
 					</div>
-					<div className="w-[100px] flex justify-center items-center ">
-						<button className="border px-3 py-0.5 rounded-[2px] bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-[13px]">
-							Submit
-						</button>
-					</div>
+					
 				</div>
 			</form>
 		</>
