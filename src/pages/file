@@ -1,7 +1,7 @@
 const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Check if any row has all fields empty
+        
         const isEmptyRow = (item) => 
             !item.category.trim() && 
             !item.code.trim() && 
