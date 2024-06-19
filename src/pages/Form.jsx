@@ -17,7 +17,7 @@ const Form = () => {
 			description: "",
 			orderQty: "",
 			uom: "",
-			aprdQty: "",
+			approvedQuantity: "",
 			rate: "",
 			discount: "",
 			amount: "",
@@ -58,6 +58,8 @@ const Form = () => {
 	const listRefs = useRef([]);
 	const tableRefs = useRef([])
 
+	const filterDisplay = tableData.length > 1 ? ["♦ End of List",...filteredOption] : filteredOption;
+
 	useEffect(() => {
 		loadCategory();
 		loadRegion();
@@ -77,11 +79,19 @@ const Form = () => {
 	useEffect(() => {
 		if (selectIndex >= 0 && listRefs.current[selectIndex]) {
 			listRefs.current[selectIndex].scrollIntoView({
-				behavior: "smooth",
-				block: "nearest",
+				behavior: "auto",
+				block: "end",
+				inline: "nearest"
 			});
+			
+		}else if(selectIndexDist >= 0 && listRefs.current[selectIndexDist]){
+			listRefs.current[selectIndexDist].scrollIntoView({
+				behavior: "auto",
+				block: "end",
+				inline: "nearest"
+				});
 		}
-	}, [selectIndex]);
+	}, [selectIndex, selectIndexDist]);
 
 	const handleFilter = (item) => {
 		const filteredData = productData.filter(
@@ -229,7 +239,7 @@ const Form = () => {
 	const handleBlur = (e, index) => {
 		const { name, value } = e.target;
 		const list = [...tableData];
-		if (name === "orderQty" || name === "aprdQty") {
+		if (name === "orderQty" || name === "approvedQuantity") {
 			if (!isNaN(value) && value !== "") {
 				list[index][name] = parseFloat(value).toFixed(2);
 			}
@@ -277,7 +287,7 @@ const Form = () => {
 				code: "",
 				description: "",
 				orderQty: "",
-				aprdQty: "",
+				approvedQuantity: "",
 				rate: "",
 				discount: "",
 				amount: "",
@@ -485,6 +495,7 @@ const Form = () => {
 												selectIndexDist === index ? "bg-[#ff9a00]" : ""
 											}`}
 											onClick={() => handleDistributor(item)}
+											ref={el => listRefs.current[index] = el}
 										>
 											<>
 												{item.ledgerCode} - {item.ledgerName}
@@ -560,7 +571,7 @@ const Form = () => {
 											value={data.category}
 											onChange={(e) => handleChange(e, rowIndex)}
 											onKeyDown={(e) =>
-												handleKeySelect(e, rowIndex, filteredOption, "category")
+												handleKeySelect(e, rowIndex, filterDisplay, "category")
 											}
 											onFocus={() => handleFocus("category")}
 											onBlur={() => setShowList(false)}
@@ -579,10 +590,8 @@ const Form = () => {
 													tabIndex="-1"
 													onMouseDown={(e) => e.preventDefault()}
 												>
-													<li tabIndex="0" className="pl-1" ref={(el) => (listRefs.current[0] = el)}>
-														&diams; End of List
-													</li>
-													{filteredOption.map((cat, catIndex) => (
+													
+													{filterDisplay.map((cat, catIndex) => (
 														<li
 															tabIndex="0"
 															key={catIndex}
@@ -683,9 +692,9 @@ const Form = () => {
 										<input
 											autoComplete="off"
 											type="text"
-											name="aprdQty"
+											name="approvedQuantity"
 											step="0.01"
-											value={data.aprdQty}
+											value={data.approvedQuantity}
 											onChange={(e) => handleChange(e, rowIndex)}
 											ref={(input) =>
 												(tableRefs.current[rowIndex * 10 + 3] = input)
@@ -710,7 +719,7 @@ const Form = () => {
 													style: "currency",
 													currency: "NGN",
 													minimumFractionDigits: 2,
-											  })
+											})
 													.formatToParts(data.amount)
 													.map(({ type, value }) =>
 														type === "currency" ? `${value} ` : value
