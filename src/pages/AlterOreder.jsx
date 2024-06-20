@@ -1,8 +1,7 @@
 // import React from 'react'
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-const Form = () => {
-
+const AlterOrder = () => {
 
 	const [voucherType, setVoucherType] = useState("Order Booking");
 	const [distributorName, setDistributorName] = useState("");
@@ -853,4 +852,4 @@ const Form = () => {
 	);
 };
 
-export default Form;
+export default AlterOrder;

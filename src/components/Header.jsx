@@ -3,13 +3,7 @@
 const Header = () => {
 	return (
 		<>
-			<nav>
-                <ul>
-                    <li>
-                        parm
-                    </li>
-                </ul>
-            </nav>
+			
 		</>
 	);
 };
