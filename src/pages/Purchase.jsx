@@ -1,32 +1,23 @@
-// import React from 'react'
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-const AlterOrder = () => {
+const Purchase = () => {
 
-	const [voucherType, setVoucherType] = useState("Order Booking");
+
+	const [voucherType] = useState("Purchase Order");
 	const [distributorName, setDistributorName] = useState("");
 	const [voucherNo, setVoucherNo] = useState("");
 	const [vDate, setVDate] = useState("");
 	const [distributorCode, setDistributorCode] = useState("");
 	const [tableData, setTableData] = useState([
 		{
-			id: 1,
 			category: "",
 			code: "",
 			description: "",
 			orderQty: "",
-			uom: "",
-			approvedQuantity: "",
-			rate: "",
-			discount: "",
-			amount: "",
-			gmaster: "",
+			uom: ""
 		},
 	]);
 	const [createdBy, setCreatedBy] = useState("")
-	const [ctdDateTime, setCtdDateTime] = useState("")
-	const [approvedBy, setApprovedBy] = useState("")
-	const [appDateTime, setAppdDateTime] = useState("")
 	const [narration, setNarration] = useState("");
 
 	const [category] = useState([
@@ -40,7 +31,6 @@ const AlterOrder = () => {
 		"Luxury Perfume",
 		"Soap",
 	]);
-	const [color, setColor] = useState("#EFEFEF");
 	const [distributorData, setDistributorData] = useState([])
 	const [productData, setProductData] = useState([]);
 	const [prodFilter, setProdFilter] = useState([]);
@@ -142,18 +132,18 @@ const AlterOrder = () => {
 		setDistributorCode(item.ledgerCode)
 	}
 
-	const handleTotal = (e, index) => {
-		const { value } = e.target;
-		if (value) {
-			const total = parseFloat(value * tableData[index].rate).toFixed(2);
-			const discount = parseFloat(
-				(total * tableData[index].discount) / 100
-			).toFixed(2);
-			const price = parseFloat(total - discount).toFixed(2);
-			tableData[index].amount = price;
-			setTableData([...tableData]);
-		}
-	};
+	// const handleTotal = (e, index) => {
+	// 	const { value } = e.target;
+	// 	if (value) {
+	// 		const total = parseFloat(value * tableData[index].rate).toFixed(2);
+	// 		const discount = parseFloat(
+	// 			(total * tableData[index].discount) / 100
+	// 		).toFixed(2);
+	// 		const price = parseFloat(total - discount).toFixed(2);
+	// 		tableData[index].amount = price;
+	// 		setTableData([...tableData]);
+	// 	}
+	// };
 
 	const handleKeySelect = (e, rowIndex, options, property) => {
 		
@@ -178,10 +168,10 @@ const AlterOrder = () => {
 				e.preventDefault();
 					handleSelect(property, options[selectIndex], rowIndex);
 					if(property === 'category' && tableData[rowIndex].category === "♦ End of List"){
-						inputRefs.current[4].focus()
+						inputRefs.current[3].focus()
 						
 					} else {
-						tableRefs.current[rowIndex * 10 + (property === 'category' ? 1 : 2)]?.focus();
+						tableRefs.current[rowIndex * 5 + (property === 'category' ? 1 : 2)]?.focus();
 					}
 			} else if (e.key === "Tab") {
 				e.preventDefault();
@@ -198,7 +188,6 @@ const AlterOrder = () => {
 		}
 		if (property === "code") {
 			setSelectIndex(selectIndexProd);
-
 			setShowProdList(true);
 		}
 
@@ -228,26 +217,10 @@ const AlterOrder = () => {
 		
 	};
 
-	const handleVoucher = (e) => {
-		const { value } = e.target;
-		if (value === "Purchase") {
-			setVoucherType("Purchase");
-			setColor("#DFF5FF");
-		} else if (value === "Purchase Return") {
-			setColor("#E0FBE2");
-			setVoucherType("Purchase Return");
-		} else {
-			setColor("#EFEFEF");
-			setVoucherType("Orderbooking");
-		}
-		setVoucherType(value);
-		
-	};
-
 	const handleBlur = (e, index) => {
 		const { name, value } = e.target;
 		const list = [...tableData];
-		if (name === "orderQty" || name === "approvedQuantity") {
+		if (name === "orderQty") {
 			if (!isNaN(value) && value !== "") {
 				list[index][name] = parseFloat(value).toFixed(2);
 			}
@@ -260,7 +233,7 @@ const AlterOrder = () => {
 			e.preventDefault();
 
 			if (isTable) {
-				const nextField = rowIndex * 10 + colIndex + 1;
+				const nextField = rowIndex * 5 + colIndex + 1;
 				if (
 					nextField < tableRefs.current.length &&
 					tableRefs.current[nextField]
@@ -269,20 +242,17 @@ const AlterOrder = () => {
 					tableRefs.current[nextField].focus();
 					
 				} else {
-					if (rowIndex === tableData.length - 1) addRow();
-					else {
-						tableRefs.current[(rowIndex + 1) * 10].focus();
+					if (rowIndex === tableData.length - 1){
+                        addRow();
+                    } else {
+						tableRefs.current[(rowIndex + 1) * 5].focus();
 					}
 				}
 			} else {
 				const fieldIndex = rowIndex + 1;
 				if (fieldIndex < inputRefs.current.length) {
-					
-						console.log(rowIndex)
 						inputRefs.current[fieldIndex]?.focus();
-					
-				} else {
-					tableRefs.current[0]?.focus();
+					// console.log(tableRefs)
 				}
 			}
 		}
@@ -292,66 +262,43 @@ const AlterOrder = () => {
 		setTableData((prevData) => [
 			...prevData,
 			{
-				id: prevData.length + 1,
 				category: "",
 				code: "",
 				description: "",
 				orderQty: "",
-				approvedQuantity: "",
-				rate: "",
-				discount: "",
-				amount: "",
-				gmaster: "",
+				uom:""
 			},
 		]);
 		setTimeout(()=>{
+            
 			const newRowIndex = tableData.length;
-			tableRefs.current[ newRowIndex * 10].focus();
+            console.log(newRowIndex*5)
+			tableRefs.current[newRowIndex * 5].focus()
 			setFilteredOption(category)
 
 		},0)
 	};
-	const convertDateFormat =(dateString)=>{
-
-		const formattedDate = dateString.replace(/[./]/g, '-');
+	
+	const convertDateFormat = (dateString) => {
+		const formattedDate = dateString.replace(/[./]/g, "-");
 
 		const parts = formattedDate.split("-");
-		const date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`)
-		
+		const date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+
 		const year = date.getFullYear();
-		const month = String(date.getMonth() + 1).padStart(2, '0');
-		const day = String(date.getDate()).padStart(2, '0');
+		const month = String(date.getMonth() + 1).padStart(2, "0");
+		const day = String(date.getDate()).padStart(2, "0");
 
 		return `${year}-${month}-${day}`;
-	}
-	
-	const convertDateTime = (dateTimeString)=>{
-		// Replace "." or "/" to "-" date part
-		const formattedDateTime = dateTimeString.replace(/[./]/g, "-");
-
-		// Split date and time parts
-		const [datePart, timePart] = formattedDateTime.split(" ")
-		const [day, month, year] = datePart.split('-')
-		const [time, period] = timePart.split(' ')
-
-		let [hours, minutes] = time.split(":")
-		hours = parseInt(hours, 10)
-		minutes = parseInt(minutes, 10)
-
-		if(period === 'PM' && hours < 12){
-			hours += 12;
-		} else if(period === 'AM' && hours === 12){
-			hours = 0;
-		}
-		
-		//  Return formatted date and time dd-mm-yyy hh:mm AM/PM
-		return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${String(hours).padStart(2,'0')}:${String(minutes).padStart(2, '0')}`;
-	}
+	};
 
 	const handleSubmit = async () => {
-		const voucherDate = convertDateFormat(vDate);
-		const createdDateTime = convertDateTime(ctdDateTime);
-		const approvedDateTime = convertDateTime(appDateTime);
+		const voucherDate = convertDateFormat(vDate)
+		const orderItems = tableData.filter((item)=>{
+			return item.category !== "♦ End of List" 
+		}
+			
+		)
 		try {
 			// Prepare data to send to the server
 			const formData = {
@@ -361,39 +308,14 @@ const AlterOrder = () => {
 				voucherDate,
 				distributorCode,
 				createdBy,
-				approvedBy,
-				createdDateTime,
-				approvedDateTime,
 				narration,
-				// {
-				// // reportData: {
-				// // 	// Include common form fields
-				// // 	// Include table data with common fields
-
-				// // 	tableData: tableData.map(({id, ...item}) => ({
-				// // 		voucherType,
-				// // 		voucherNo,
-				// // 		distributorName,
-				// // 		voucherDate,
-				// // 		...item,
-				// // 		// Add other common fields to each table item
-				// // 		createdBy,
-				// // 		approvedBy,
-				// // 		createdDateTime,
-				// // 		approvedDateTime,
-				// // 		narration,
-				// // 	})),
-				// // },
-				// }
+				orderItems
 			};
-
-			// Send data to the backend
-
 			// Handle response if needed
 			await axios.post("http://localhost:8080/orders/booking", formData);
-			// console.log(formData)
+			console.log(formData)
 		} catch (error) {
-			// Handle error
+			
 			console.error("Error:", error);
 		}
 	};
@@ -412,44 +334,34 @@ const AlterOrder = () => {
 	return (
 		<>
 			<form
-				action=""
-				style={{ background: color }}
-				className=" h-screen px-0.5 relative"
+				className=" h-screen relative bg-[#fff4fc]"
 				onSubmit={handleSubmit}
 			>
 				<div className="flex justify-between ">
 					<div className="flex leading-4 py-2 px-1">
-						<label htmlFor="voucherType" className="w-36 text-[14px] ">
-							Voucher Type
+						<label htmlFor="voucherType" className="w-28 text-[14px] ">
+						Voucher Type
 						</label>
 						<div className="mr-0.5">:</div>
-						<select
-							ref={(el) => (inputRefs.current[0] = el)}
-							className="w-3/4 h-[18px] font-semibold text-[13px] border border-fuchsia-700 outline-0 bg-transparent"
-							id="voucherType"
-							onChange={handleVoucher}
-							onKeyDown={(e) => handleKeyPress(e, 0, null, false)}
-							value={voucherType}
-						>
-							<option value="Order Booking">Order Booking</option>
-							<option value="Purchase">Purchase</option>
-							<option value="Purchase Return">Purchase Return</option>
-						</select>
+
+						<div className="w-72 h-[18px] pl-0.5 font-semibold text-[13px] border border-fuchsia-700 outline-0 bg-transparent">
+							{voucherType}
+						</div>
 					</div>
 					<div className="flex leading-4 py-2 ">
-						<label htmlFor="vno" className="w-24 text-[14px]">
+						<label htmlFor="vno" className="w-32 text-[14px]">
 							Voucher No
 						</label>
 						<div className="mr-0.5">:</div>
 						<input
-							ref={(el) => (inputRefs.current[1] = el)}
+							ref={(el) => (inputRefs.current[0] = el)}
 							autoComplete="off"
 							onChange={(e) => setVoucherNo(e.target.value)}
 							name="voucherNo"
 							value={voucherNo}
 							type="text"
 							id="vno"
-							onKeyDown={(e) => handleKeyPress(e, 1, null, false)}
+							onKeyDown={(e) => handleKeyPress(e, 0, null, false)}
 							className=" w-2/3 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
 						/>
 					</div>
@@ -459,12 +371,12 @@ const AlterOrder = () => {
 						</label>
 						<div className="mr-0.5">:</div>
 						<input
-							ref={(el) => (inputRefs.current[2] = el)}
+							ref={(el) => (inputRefs.current[1] = el)}
 							id="vdate"
 							autoComplete="off"
 							name="vDate"
 							onChange={(e) => setVDate(e.target.value)}
-							onKeyDown={(e) => handleKeyPress(e, 2, null, false)}
+							onKeyDown={(e) => handleKeyPress(e, 1, null, false)}
 							value={vDate}
 							placeholder="DD-MM-YYYY"
 							type="text"
@@ -480,7 +392,7 @@ const AlterOrder = () => {
 						</label>
 						<div className="mr-0.5">:</div>
 						<input
-							ref={(el) => (inputRefs.current[3] = el)}
+							ref={(el) => (inputRefs.current[2] = el)}
 							autoComplete="off"
 							onChange={(e) => setDistributorName(e.target.value)}
 							value={distributorName}
@@ -506,9 +418,9 @@ const AlterOrder = () => {
 											}`}
 											onClick={() => {
 												handleDistributor(item);
-												tableRefs.current[0].focus()
-												}}
-											ref={el => listRefs.current[index] = el}
+												inputRefs.current[0].focus();
+											}}
+											ref={(el) => (listRefs.current[index] = el)}
 										>
 											<>
 												{item.ledgerCode} - {item.ledgerName}
@@ -518,6 +430,21 @@ const AlterOrder = () => {
 								</ul>
 							</div>
 						)}
+					</div>
+					<div className="leading-4 hidden">
+						<label htmlFor="gmaster" className="w-32 text-[14px]">
+							Godown Master
+						</label>
+						<div className="mr-0.5">:</div>
+						<input	
+							autoComplete="off"
+							
+							name="godownMaster"
+							// value={voucherNo}
+							type="text"
+							id="gmaster"
+							className=" w-2/3 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
+						/>
 					</div>
 					<div className="flex leading-4 px-1">
 						<label htmlFor="dc" className="w-[100px] text-[14px]">
@@ -530,7 +457,7 @@ const AlterOrder = () => {
 						</span>
 					</div>
 				</div>
-
+				
 				<div className="h-[77vh] w-full overflow-y-scroll pl-1 border">
 					<table className="border-collapse border border-slate-300 ">
 						<thead className=" bg-[#F9F3CC] text-[13px] border border-slate-300 font-semibold sticky top-0">
@@ -544,7 +471,7 @@ const AlterOrder = () => {
 								<td className="w-[100px] text-center border border-slate-300">
 									Product Code
 								</td>
-								<td className="w-[400px] text-center border border-slate-300">
+								<td className="w-[500px] text-center border border-slate-300">
 									Product Description
 								</td>
 								<td className="w-[80px] text-center border border-slate-300">
@@ -553,26 +480,12 @@ const AlterOrder = () => {
 								<td className="w-[50px] text-center border border-slate-300">
 									Uom
 								</td>
-								<td className="w-[96px] text-center border border-slate-300">
-									Aprd Qty
-								</td>
-								<td className="w-[87px] text-center border border-slate-300">
-									Rate
-								</td>
-								<td className="w-[60px] text-center border border-slate-300">
-									Disct %
-								</td>
-								<td className="w-[100px] text-center border border-slate-300">
-									Amount
-								</td>
-								<td className="w-[200px] text-center border border-slate-300">
-									Godown Master
-								</td>
+								
 							</tr>
 						</thead>
 						<tbody>
 							{tableData.map((data, rowIndex) => (
-								<tr key={data.id} className=" text-[13px] h-[17px] leading-4">
+								<tr key={rowIndex} className=" text-[13px] h-[17px] leading-4">
 									<td className="w-[60px] text-center border border-slate-300 bg-white">
 										{rowIndex + 1}
 									</td>
@@ -589,7 +502,7 @@ const AlterOrder = () => {
 											onFocus={() => handleFocus("category")}
 											onBlur={() => setShowList(false)}
 											ref={(input) =>
-												(tableRefs.current[rowIndex * 10 + 0] = input)
+												(tableRefs.current[rowIndex * 5 + 0] = input)
 											}
 											className="w-full outline-0 pl-0.5"
 										/>
@@ -603,22 +516,18 @@ const AlterOrder = () => {
 													tabIndex="-1"
 													onMouseDown={(e) => e.preventDefault()}
 												>
-													
 													{filterDisplay.map((cat, catIndex) => (
 														<li
 															tabIndex="0"
 															key={catIndex}
-															onClick={() =>{
+															onClick={() => {
 																handleSelect("category", cat, rowIndex);
-																tableRefs.current[rowIndex * 10 + 1].focus();
-																setSelectIndexCat(catIndex)
-																}
-															}
-															ref={(el) =>
-																(listRefs.current[catIndex] = el)
-															}
+																tableRefs.current[rowIndex * 5 + 1].focus();
+																setSelectIndexCat(catIndex);
+															}}
+															ref={(el) => (listRefs.current[catIndex] = el)}
 															className={`cursor-pointer ${
-																selectIndex === catIndex  ? "bg-[#ff9a00]" : ""
+																selectIndex === catIndex ? "bg-[#ff9a00]" : ""
 															} pl-1  text-[13px]`}
 														>
 															{cat}
@@ -641,7 +550,7 @@ const AlterOrder = () => {
 												handleKeySelect(e, rowIndex, prodFilter, "code")
 											}
 											ref={(input) =>
-												(tableRefs.current[rowIndex * 10 + 1] = input)
+												(tableRefs.current[rowIndex * 5 + 1] = input)
 											}
 											className="w-full outline-0 text-center"
 										/>
@@ -661,6 +570,7 @@ const AlterOrder = () => {
 															key={prodIndex}
 															onClick={() =>
 																handleSelect("code", prod, rowIndex)
+                                                                
 															}
 															ref={(el) => (listRefs.current[prodIndex] = el)}
 															className={`cursor-pointer ${
@@ -681,7 +591,7 @@ const AlterOrder = () => {
 											</div>
 										)}
 									</td>
-									<td className="w-[400px] pl-0.5 text-left border border-slate-300 bg-white">
+									<td className="w-[500px] pl-0.5 text-left border border-slate-300 bg-white">
 										{data.description}
 									</td>
 									<td className="w-[80px] text-center border border-slate-300 bg-white">
@@ -696,7 +606,7 @@ const AlterOrder = () => {
 											}}
 											onKeyDown={(e) => handleKeyPress(e, rowIndex, 2, true)}
 											ref={(input) =>
-												(tableRefs.current[rowIndex * 10 + 2] = input)
+												(tableRefs.current[rowIndex * 5 + 2] = input)
 											}
 											className="w-full outline-0 text-right pr-0.5"
 										/>
@@ -704,131 +614,37 @@ const AlterOrder = () => {
 									<td className="w-[50px] text-center border border-slate-300 bg-white ">
 										{data.uom}
 									</td>
-									<td className="w-[96px] text-center border border-slate-300 bg-white">
-										<input
-											autoComplete="off"
-											type="text"
-											name="approvedQuantity"
-											step="0.01"
-											value={data.approvedQuantity}
-											onChange={(e) => handleChange(e, rowIndex)}
-											ref={(input) =>
-												(tableRefs.current[rowIndex * 10 + 3] = input)
-											}
-											onKeyDown={(e) => handleKeyPress(e, rowIndex, 3, true)}
-											onBlur={(e) => {
-												handleTotal(e, rowIndex);
-												handleBlur(e, rowIndex);
-											}}
-											className="w-full outline-0 text-right pr-0.5"
-										/>
-									</td>
-									<td className="w-[87px] text-right pr-0.5 border border-slate-300 bg-white">
-										{data.rate}
-									</td>
-									<td className="w-[60px] text-right pr-0.5 border border-slate-300 bg-white">
-										{data.discount ? `${data.discount} %` : ""}
-									</td>
-									<td className="w-[100px] text-right pr-0.5 border border-slate-300 bg-white">
-										{data.amount
-											? Intl.NumberFormat("en-NG", {
-													style: "currency",
-													currency: "NGN",
-													minimumFractionDigits: 2,
-											})
-													.formatToParts(data.amount)
-													.map(({ type, value }) =>
-														type === "currency" ? `${value} ` : value
-													)
-													.join("")
-											: ""}
-									</td>
-									<td className="w-[200px] text-center border border-slate-300 bg-white">
-										{data.gmaster}
-									</td>
+									
 								</tr>
 							))}
 						</tbody>
 					</table>
 				</div>
 
-				<div className=" px-1 flex justify-between text-[14px] mt-5">
-					<div className="">
-						<div className="w-[800px] flex justify-between ">
-							<div className="flex leading-4 mb-1 w-[300px]">
-								<label htmlFor="" className="w-[35%]">
-									Created By
-								</label>
-								<span className="mr-0.5">:</span>
-								<input
-									autoComplete="off"
-									name="createdBy"
-									onChange={(e) => setCreatedBy(e.target.value)}
-									value={createdBy}
-									type="text"
-									ref={(el) => (inputRefs.current[4] = el)}
-									onKeyDown={(e) => handleKeyPress(e, 4, null, false)}
-									className="w-3/5 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
-								/>
-							</div>
-							<div className="flex leading-4 mb-1 w-[400px] ">
-								<label htmlFor="" className="w-[40%]">
-									Created Date & Time
-								</label>
-								<span className="w-[2%]">:</span>
-								<input
-									autoComplete="off"
-									name="ctdDateTime"
-									onChange={(e) => setCtdDateTime(e.target.value)}
-									value={ctdDateTime}
-									ref={(el) => (inputRefs.current[5] = el)}
-									onKeyDown={(e) => handleKeyPress(e, 5, null, false)}
-									type="text"
-									placeholder="DD-MM-YYYY HH:mm "
-									className="w-44 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
-								/>
-							</div>
+				<div className=" px-1 flex flex-col text-[14px] mt-3">
+					<div className="w-[650px] flex justify-between ">
+						<div className="flex leading-4 mb-1 w-[300px]">
+							<label htmlFor="" className="w-[35%]">
+								Created By
+							</label>
+							<span className="mr-0.5">:</span>
+							<input
+								autoComplete="off"
+								name="createdBy"
+								onChange={(e) => setCreatedBy(e.target.value)}
+								value={createdBy}
+								type="text"
+								ref={(el) => (inputRefs.current[3] = el)}
+								onKeyDown={(e) => handleKeyPress(e, 3, null, false)}
+								className="w-3/5 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
+							/>
 						</div>
-						<div className="w-[800px] flex justify-between ">
-							<div className="flex leading-4 w-[300px]">
-								<label htmlFor="" className="w-[35%]">
-									Approved By
-								</label>
-								<span className="mr-0.5">:</span>
-								<input
-									autoComplete="off"
-									name="approvedBy"
-									onChange={(e) => setApprovedBy(e.target.value)}
-									value={approvedBy}
-									type="text"
-									ref={(el) => (inputRefs.current[6] = el)}
-									onKeyDown={(e) => handleKeyPress(e, 6, null, false)}
-									className="w-3/5 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
-								/>
-							</div>
-							<div className="flex leading-4 mb-1 w-[400px]">
-								<label htmlFor="" className="w-[40%]">
-									Approved Date & Time
-								</label>
-								<span className=" w-[2%]">:</span>
-								<input
-									autoComplete="off"
-									name="appDateTime"
-									onChange={(e) => setAppdDateTime(e.target.value)}
-									value={appDateTime}
-									type="text"
-									placeholder="DD-MM-YYYY HH:mm "
-									ref={(el) => (inputRefs.current[7] = el)}
-									onKeyDown={(e) => handleKeyPress(e, 7, null, false)}
-									className=" w-44 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
-								/>
-							</div>
-						</div>
+
 					</div>
 
-					<div className="w-[500px]">
-						<div className="flex leading-4 mb-1">
-							<label htmlFor="" className="w-1/5">
+					<div className="w-[700px] ">
+						<div className="flex leading-4 mt-1">
+							<label htmlFor="" className="w-[15%]">
 								Narration
 							</label>
 							<span className="mr-0.5">:</span>
@@ -838,11 +654,11 @@ const AlterOrder = () => {
 								value={narration}
 								onChange={(e) => setNarration(e.target.value)}
 								rows={2}
-								maxLength={132}
+								maxLength={150}
 								type=""
 								onKeyDown={handleKeyDown}
-								ref={(el) => (inputRefs.current[8] = el)}
-								className="w-4/5 border border-fuchsia-700 h-[44px] focus:bg-[#fee8af] resize-none focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
+								ref={(el) => (inputRefs.current[4] = el)}
+								className="w-[76%] border border-fuchsia-700 h-[34px] focus:bg-[#fee8af] resize-none focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
 							/>
 						</div>
 					</div>
@@ -852,4 +668,4 @@ const AlterOrder = () => {
 	);
 };
 
-export default AlterOrder;
+export default Purchase;

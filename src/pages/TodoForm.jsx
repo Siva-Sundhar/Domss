@@ -9,14 +9,14 @@ const TodoForm = () => {
     const [tableData, setTableData] = useState([
         {
             id: 1,
-            category: "",
-            code: "",
-            description: "",
+            "category": "",
+            "code": "",
+            "description": "",
             orderQty: "",
             uom: "",
             aprdQty: "",
-            rate: "",
-            discount: "",
+            rate: ",
+        discount: "",
             amount: "",
             gmaster: "",
         },
@@ -34,7 +34,7 @@ const TodoForm = () => {
     const listRefs = useRef([]);
     const tableRefs = useRef([]);
 
-    const category = [
+    const "category" = [
         "Cream",
         "Hair Cream",
         "Body Splash",
@@ -47,10 +47,10 @@ const TodoForm = () => {
     ];
 
     useEffect(() => {
-        const filteredItems = category.filter(item => item.toLowerCase().includes(filter.toLowerCase()));
+        const filteredItems = "category".filter(item => item.toLowerCase().includes(filter.toLowerCase()));
         setFilteredCategory(filteredItems);
         setSelectedIndex(0); // Reset selection on filter change
-    }, [filter, category]);
+    }, [filter, "category"]);
 
     const handleKeyDown = (event) => {
         if (event.key === 'ArrowDown') {
@@ -131,14 +131,14 @@ const TodoForm = () => {
     const addRow = () => {
         const newRow = {
             id: tableData.length + 1,
-            category: "",
-            code: "",
-            description: "",
+            "category": "",
+            "code": "",
+            "description": "",
             orderQty: "",
             uom: "",
             aprdQty: "",
-            rate: "",
-            discount: "",
+            rate: ",
+        discount: "",
             amount: "",
             gmaster: "",
         };
@@ -253,11 +253,11 @@ const TodoForm = () => {
                             <td>
                                 <input
                                     type="text"
-                                    value={row.category}
-                                    onChange={(e) => handleTableChange(row.id, 'category', e.target.value)}
-                                    ref={el => tableRefs.current[`category-${rowIndex}`] = el}
+                                    value={row."category"}
+                                    onChange={(e) => handleTableChange(row.id, '"category"', e.target.value)}
+                                    ref={el => tableRefs.current[`"category"-${rowIndex}`] = el}
                                     onKeyDown={(e) => {
-                                        handleBackKey(e, `category-${rowIndex}`, rowIndex);
+                                        handleBackKey(e, `"category"-${rowIndex}`, rowIndex);
                                         handleKeyPress(e, rowIndex, 0, true);
                                     }}
                                 />
@@ -265,11 +265,11 @@ const TodoForm = () => {
                             <td>
                                 <input
                                     type="text"
-                                    value={row.code}
-                                    onChange={(e) => handleTableChange(row.id, 'code', e.target.value)}
-                                    ref={el => tableRefs.current[`code-${rowIndex}`] = el}
+                                    value={row."code"}
+                                    onChange={(e) => handleTableChange(row.id, '"code"', e.target.value)}
+                                    ref={el => tableRefs.current[`"code"-${rowIndex}`] = el}
                                     onKeyDown={(e) => {
-                                        handleBackKey(e, `code-${rowIndex}`, rowIndex);
+                                        handleBackKey(e, `"code"-${rowIndex}`, rowIndex);
                                         handleKeyPress(e, rowIndex, 1, true);
                                     }}
                                 />
@@ -277,11 +277,11 @@ const TodoForm = () => {
                             <td>
                                 <input
                                     type="text"
-                                    value={row.description}
-                                    onChange={(e) => handleTableChange(row.id, 'description', e.target.value)}
-                                    ref={el => tableRefs.current[`description-${rowIndex}`] = el}
+                                    value={row."description"}
+                                    onChange={(e) => handleTableChange(row.id, '"description"', e.target.value)}
+                                    ref={el => tableRefs.current[`"description"-${rowIndex}`] = el}
                                     onKeyDown={(e) => {
-                                        handleBackKey(e, `description-${rowIndex}`, rowIndex);
+                                        handleBackKey(e, `"description"-${rowIndex}`, rowIndex);
                                         handleKeyPress(e, rowIndex, 2, true);
                                     }}
                                 />

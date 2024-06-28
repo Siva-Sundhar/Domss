@@ -1,17 +1,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-const Form = () => {
+const VoucherCreation = () => {
 
 
-	const [voucherType, setVoucherType] = useState("Order Booking");
+	const [voucherType] = useState("Order Booking");
 	const [distributorName, setDistributorName] = useState("");
 	const [voucherNo, setVoucherNo] = useState("");
 	const [vDate, setVDate] = useState("");
 	const [distributorCode, setDistributorCode] = useState("");
 	const [tableData, setTableData] = useState([
 		{
-			id: 1,
 			category: "",
 			code: "",
 			description: "",
@@ -25,9 +24,7 @@ const Form = () => {
 		},
 	]);
 	const [createdBy, setCreatedBy] = useState("")
-	const [ctdDateTime, setCtdDateTime] = useState("")
 	const [approvedBy, setApprovedBy] = useState("")
-	const [appDateTime, setAppdDateTime] = useState("")
 	const [narration, setNarration] = useState("");
 
 	const [category] = useState([
@@ -41,7 +38,6 @@ const Form = () => {
 		"Luxury Perfume",
 		"Soap",
 	]);
-	const [color, setColor] = useState("#EFEFEF");
 	const [distributorData, setDistributorData] = useState([])
 	const [productData, setProductData] = useState([]);
 	const [prodFilter, setProdFilter] = useState([]);
@@ -199,7 +195,6 @@ const Form = () => {
 		}
 		if (property === "code") {
 			setSelectIndex(selectIndexProd);
-
 			setShowProdList(true);
 		}
 
@@ -226,22 +221,6 @@ const Form = () => {
 			);
 			setProdFilter(filteredList);
 		}
-		
-	};
-
-	const handleVoucher = (e) => {
-		const { value } = e.target;
-		if (value === "Purchase") {
-			setVoucherType("Purchase");
-			setColor("#DFF5FF");
-		} else if (value === "Purchase Return") {
-			setColor("#E0FBE2");
-			setVoucherType("Purchase Return");
-		} else {
-			setColor("#EFEFEF");
-			setVoucherType("Orderbooking");
-		}
-		setVoucherType(value);
 		
 	};
 
@@ -278,12 +257,8 @@ const Form = () => {
 			} else {
 				const fieldIndex = rowIndex + 1;
 				if (fieldIndex < inputRefs.current.length) {
-					
-						console.log(rowIndex)
 						inputRefs.current[fieldIndex]?.focus();
 					
-				} else {
-					tableRefs.current[0]?.focus();
 				}
 			}
 		}
@@ -293,16 +268,15 @@ const Form = () => {
 		setTableData((prevData) => [
 			...prevData,
 			{
-				id: prevData.length + 1,
 				category: "",
 				code: "",
 				description: "",
 				orderQty: "",
+				uom: "",
 				approvedQuantity: "",
 				rate: "",
 				discount: "",
 				amount: "",
-				gmaster: "",
 			},
 		]);
 		setTimeout(()=>{
@@ -312,47 +286,27 @@ const Form = () => {
 
 		},0)
 	};
-	const convertDateFormat =(dateString)=>{
-
-		const formattedDate = dateString.replace(/[./]/g, '-');
+	
+	const convertDateFormat = (dateString) => {
+		const formattedDate = dateString.replace(/[./]/g, "-");
 
 		const parts = formattedDate.split("-");
-		const date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`)
-		
+		const date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+
 		const year = date.getFullYear();
-		const month = String(date.getMonth() + 1).padStart(2, '0');
-		const day = String(date.getDate()).padStart(2, '0');
+		const month = String(date.getMonth() + 1).padStart(2, "0");
+		const day = String(date.getDate()).padStart(2, "0");
 
 		return `${year}-${month}-${day}`;
-	}
-	
-	const convertDateTime = (dateTimeString)=>{
-		// Replace "." or "/" to "-" date part
-		const formattedDateTime = dateTimeString.replace(/[./]/g, "-");
-
-		// Split date and time parts
-		const [datePart, timePart] = formattedDateTime.split(" ")
-		const [day, month, year] = datePart.split('-')
-		const [time, period] = timePart.split(' ')
-
-		let [hours, minutes] = time.split(":")
-		hours = parseInt(hours, 10)
-		minutes = parseInt(minutes, 10)
-
-		if(period === 'PM' && hours < 12){
-			hours += 12;
-		} else if(period === 'AM' && hours === 12){
-			hours = 0;
-		}
-		
-		//  Return formatted date and time dd-mm-yyy hh:mm AM/PM
-		return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${String(hours).padStart(2,'0')}:${String(minutes).padStart(2, '0')}`;
-	}
+	};
 
 	const handleSubmit = async () => {
-		const voucherDate = convertDateFormat(vDate);
-		const createdDateTime = convertDateTime(ctdDateTime);
-		const approvedDateTime = convertDateTime(appDateTime);
+		const voucherDate = convertDateFormat(vDate)
+		const orderItems = tableData.filter((item)=>{
+			return item.category !== "♦ End of List" 
+		}
+			
+		)
 		try {
 			// Prepare data to send to the server
 			const formData = {
@@ -363,38 +317,14 @@ const Form = () => {
 				distributorCode,
 				createdBy,
 				approvedBy,
-				createdDateTime,
-				approvedDateTime,
 				narration,
-				// {
-				// // reportData: {
-				// // 	// Include common form fields
-				// // 	// Include table data with common fields
-
-				// // 	tableData: tableData.map(({id, ...item}) => ({
-				// // 		voucherType,
-				// // 		voucherNo,
-				// // 		distributorName,
-				// // 		voucherDate,
-				// // 		...item,
-				// // 		// Add other common fields to each table item
-				// // 		createdBy,
-				// // 		approvedBy,
-				// // 		createdDateTime,
-				// // 		approvedDateTime,
-				// // 		narration,
-				// // 	})),
-				// // },
-				// }
+				orderItems
 			};
-
-			// Send data to the backend
-
 			// Handle response if needed
-			await axios.post("http://localhost:8080/orders/booking", formData);
-			// console.log(formData)
+			// await axios.post("http://localhost:8080/orders/booking", formData);
+			console.log(formData)
 		} catch (error) {
-			// Handle error
+			
 			console.error("Error:", error);
 		}
 	};
@@ -413,44 +343,34 @@ const Form = () => {
 	return (
 		<>
 			<form
-				action=""
-				style={{ background: color }}
-				className=" h-screen px-0.5 relative"
-				onSubmit={handleSubmit}
+				className=" h-screen relative bg-[#f3ffe9]"
+				onSubmit={(e)=>e.preventDefault()}
 			>
 				<div className="flex justify-between ">
 					<div className="flex leading-4 py-2 px-1">
-						<label htmlFor="voucherType" className="w-36 text-[14px] ">
-							Voucher Type
+						<label htmlFor="voucherType" className="w-28 text-[14px] ">
+						Voucher Type
 						</label>
 						<div className="mr-0.5">:</div>
-						<select
-							ref={(el) => (inputRefs.current[0] = el)}
-							className="w-3/4 h-[18px] font-semibold text-[13px] border border-fuchsia-700 outline-0 bg-transparent"
-							id="voucherType"
-							onChange={handleVoucher}
-							onKeyDown={(e) => handleKeyPress(e, 0, null, false)}
-							value={voucherType}
-						>
-							<option value="Order Booking">Order Booking</option>
-							<option value="Purchase">Purchase</option>
-							<option value="Purchase Return">Purchase Return</option>
-						</select>
+
+						<div className="w-72 h-[18px] pl-0.5 font-semibold text-[13px] border border-fuchsia-700 outline-0 bg-transparent">
+							{voucherType}
+						</div>
 					</div>
 					<div className="flex leading-4 py-2 ">
-						<label htmlFor="vno" className="w-24 text-[14px]">
+						<label htmlFor="vno" className="w-32 text-[14px]">
 							Voucher No
 						</label>
 						<div className="mr-0.5">:</div>
 						<input
-							ref={(el) => (inputRefs.current[1] = el)}
+							ref={(el) => (inputRefs.current[0] = el)}
 							autoComplete="off"
 							onChange={(e) => setVoucherNo(e.target.value)}
 							name="voucherNo"
 							value={voucherNo}
 							type="text"
 							id="vno"
-							onKeyDown={(e) => handleKeyPress(e, 1, null, false)}
+							onKeyDown={(e) => handleKeyPress(e, 0, null, false)}
 							className=" w-2/3 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
 						/>
 					</div>
@@ -460,12 +380,12 @@ const Form = () => {
 						</label>
 						<div className="mr-0.5">:</div>
 						<input
-							ref={(el) => (inputRefs.current[2] = el)}
+							ref={(el) => (inputRefs.current[1] = el)}
 							id="vdate"
 							autoComplete="off"
 							name="vDate"
 							onChange={(e) => setVDate(e.target.value)}
-							onKeyDown={(e) => handleKeyPress(e, 2, null, false)}
+							onKeyDown={(e) => handleKeyPress(e, 1, null, false)}
 							value={vDate}
 							placeholder="DD-MM-YYYY"
 							type="text"
@@ -481,7 +401,7 @@ const Form = () => {
 						</label>
 						<div className="mr-0.5">:</div>
 						<input
-							ref={(el) => (inputRefs.current[3] = el)}
+							ref={(el) => (inputRefs.current[2] = el)}
 							autoComplete="off"
 							onChange={(e) => setDistributorName(e.target.value)}
 							value={distributorName}
@@ -507,9 +427,9 @@ const Form = () => {
 											}`}
 											onClick={() => {
 												handleDistributor(item);
-												tableRefs.current[0].focus()
-												}}
-											ref={el => listRefs.current[index] = el}
+												tableRefs.current[0].focus();
+											}}
+											ref={(el) => (listRefs.current[index] = el)}
 										>
 											<>
 												{item.ledgerCode} - {item.ledgerName}
@@ -519,6 +439,20 @@ const Form = () => {
 								</ul>
 							</div>
 						)}
+					</div>
+					<div className="leading-4 hidden">
+						<label htmlFor="gm" className="w-32 text-[14px]">
+							Godown Master
+						</label>
+						<div className="mr-0.5">:</div>
+						<input
+							autoComplete="off"
+							name="gmaster"
+							// value={GodownMaster}
+							type="text"
+							id="gm"
+							className=" w-2/3 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
+						/>
 					</div>
 					<div className="flex leading-4 px-1">
 						<label htmlFor="dc" className="w-[100px] text-[14px]">
@@ -531,7 +465,7 @@ const Form = () => {
 						</span>
 					</div>
 				</div>
-
+				
 				<div className="h-[77vh] w-full overflow-y-scroll pl-1 border">
 					<table className="border-collapse border border-slate-300 ">
 						<thead className=" bg-[#F9F3CC] text-[13px] border border-slate-300 font-semibold sticky top-0">
@@ -545,7 +479,7 @@ const Form = () => {
 								<td className="w-[100px] text-center border border-slate-300">
 									Product Code
 								</td>
-								<td className="w-[400px] text-center border border-slate-300">
+								<td className="w-[500px] text-center border border-slate-300">
 									Product Description
 								</td>
 								<td className="w-[80px] text-center border border-slate-300">
@@ -565,9 +499,6 @@ const Form = () => {
 								</td>
 								<td className="w-[100px] text-center border border-slate-300">
 									Amount
-								</td>
-								<td className="w-[200px] text-center border border-slate-300">
-									Godown Master
 								</td>
 							</tr>
 						</thead>
@@ -604,22 +535,18 @@ const Form = () => {
 													tabIndex="-1"
 													onMouseDown={(e) => e.preventDefault()}
 												>
-													
 													{filterDisplay.map((cat, catIndex) => (
 														<li
 															tabIndex="0"
 															key={catIndex}
-															onClick={() =>{
+															onClick={() => {
 																handleSelect("category", cat, rowIndex);
 																tableRefs.current[rowIndex * 10 + 1].focus();
-																setSelectIndexCat(catIndex)
-																}
-															}
-															ref={(el) =>
-																(listRefs.current[catIndex] = el)
-															}
+																setSelectIndexCat(catIndex);
+															}}
+															ref={(el) => (listRefs.current[catIndex] = el)}
 															className={`cursor-pointer ${
-																selectIndex === catIndex  ? "bg-[#ff9a00]" : ""
+																selectIndex === catIndex ? "bg-[#ff9a00]" : ""
 															} pl-1  text-[13px]`}
 														>
 															{cat}
@@ -682,7 +609,7 @@ const Form = () => {
 											</div>
 										)}
 									</td>
-									<td className="w-[400px] pl-0.5 text-left border border-slate-300 bg-white">
+									<td className="w-[500px] pl-0.5 text-left border border-slate-300 bg-white">
 										{data.description}
 									</td>
 									<td className="w-[80px] text-center border border-slate-300 bg-white">
@@ -744,92 +671,52 @@ const Form = () => {
 													.join("")
 											: ""}
 									</td>
-									<td className="w-[200px] text-center border border-slate-300 bg-white">
-										{data.gmaster}
-									</td>
 								</tr>
 							))}
 						</tbody>
 					</table>
 				</div>
 
-				<div className=" px-1 flex justify-between text-[14px] mt-5">
-					<div className="">
-						<div className="w-[800px] flex justify-between ">
-							<div className="flex leading-4 mb-1 w-[300px]">
-								<label htmlFor="" className="w-[35%]">
-									Created By
-								</label>
-								<span className="mr-0.5">:</span>
-								<input
-									autoComplete="off"
-									name="createdBy"
-									onChange={(e) => setCreatedBy(e.target.value)}
-									value={createdBy}
-									type="text"
-									ref={(el) => (inputRefs.current[4] = el)}
-									onKeyDown={(e) => handleKeyPress(e, 4, null, false)}
-									className="w-3/5 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
-								/>
-							</div>
-							<div className="flex leading-4 mb-1 w-[400px] ">
-								<label htmlFor="" className="w-[40%]">
-									Created Date & Time
-								</label>
-								<span className="w-[2%]">:</span>
-								<input
-									autoComplete="off"
-									name="ctdDateTime"
-									onChange={(e) => setCtdDateTime(e.target.value)}
-									value={ctdDateTime}
-									ref={(el) => (inputRefs.current[5] = el)}
-									onKeyDown={(e) => handleKeyPress(e, 5, null, false)}
-									type="text"
-									placeholder="DD-MM-YYYY HH:mm "
-									className="w-44 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
-								/>
-							</div>
+				<div className=" px-1 flex flex-col text-[14px] mt-3">
+					<div className="w-[650px] flex justify-between ">
+						<div className="flex leading-4 mb-1 w-[300px]">
+							<label htmlFor="" className="w-[35%]">
+								Created By
+							</label>
+							<span className="mr-0.5">:</span>
+							<input
+								autoComplete="off"
+								name="createdBy"
+								onChange={(e) => setCreatedBy(e.target.value)}
+								value={createdBy}
+								type="text"
+								ref={(el) => (inputRefs.current[4] = el)}
+								onKeyDown={(e) => handleKeyPress(e, 4, null, false)}
+								className="w-3/5 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
+							/>
 						</div>
-						<div className="w-[800px] flex justify-between ">
-							<div className="flex leading-4 w-[300px]">
-								<label htmlFor="" className="w-[35%]">
-									Approved By
-								</label>
-								<span className="mr-0.5">:</span>
-								<input
-									autoComplete="off"
-									name="approvedBy"
-									onChange={(e) => setApprovedBy(e.target.value)}
-									value={approvedBy}
-									type="text"
-									ref={(el) => (inputRefs.current[6] = el)}
-									onKeyDown={(e) => handleKeyPress(e, 6, null, false)}
-									className="w-3/5 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
-								/>
-							</div>
-							<div className="flex leading-4 mb-1 w-[400px]">
-								<label htmlFor="" className="w-[40%]">
-									Approved Date & Time
-								</label>
-								<span className=" w-[2%]">:</span>
-								<input
-									autoComplete="off"
-									name="appDateTime"
-									onChange={(e) => setAppdDateTime(e.target.value)}
-									value={appDateTime}
-									type="text"
-									placeholder="DD-MM-YYYY HH:mm "
-									ref={(el) => (inputRefs.current[7] = el)}
-									onKeyDown={(e) => handleKeyPress(e, 7, null, false)}
-									className=" w-44 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
-								/>
-							</div>
+
+						<div className="flex leading-4 w-[300px]">
+							<label htmlFor="" className="w-[35%]">
+								Approved By
+							</label>
+							<span className="mr-0.5">:</span>
+							<input
+								autoComplete="off"
+								name="approvedBy"
+								onChange={(e) => setApprovedBy(e.target.value)}
+								value={approvedBy}
+								type="text"
+								ref={(el) => (inputRefs.current[5] = el)}
+								onKeyDown={(e) => handleKeyPress(e, 5, null, false)}
+								className="w-3/5 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
+							/>
 						</div>
 					</div>
 
-					<div className="w-[500px]">
-						<div className="flex leading-4 mb-1">
-							<label htmlFor="" className="w-1/5">
+					<div className="w-[700px] ">
+						<div className="flex leading-4 mt-1">
+							<label htmlFor="" className="w-[15%]">
 								Narration
 							</label>
 							<span className="mr-0.5">:</span>
@@ -839,11 +726,11 @@ const Form = () => {
 								value={narration}
 								onChange={(e) => setNarration(e.target.value)}
 								rows={2}
-								maxLength={132}
+								maxLength={150}
 								type=""
 								onKeyDown={handleKeyDown}
-								ref={(el) => (inputRefs.current[8] = el)}
-								className="w-4/5 border border-fuchsia-700 h-[44px] focus:bg-[#fee8af] resize-none focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
+								ref={(el) => (inputRefs.current[6] = el)}
+								className="w-[76%] border border-fuchsia-700 h-[34px] focus:bg-[#fee8af] resize-none focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
 							/>
 						</div>
 					</div>
@@ -853,4 +740,4 @@ const Form = () => {
 	);
 };
 
-export default Form;
+export default VoucherCreation;
