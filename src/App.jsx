@@ -1,16 +1,13 @@
-// import OrderForm from "./pages/OrderForm"
 
-// import DBOrderForm from "./pages/DBOrderForm"
-
-// import Select from "./others/Select"
 import { BrowserRouter, Routes, Route} from "react-router-dom"
 import VoucherCreation from "./pages/VoucherCreation"
 import DisplayOrder from "./pages/DisplayOrder"
 import AlterOrder from "./pages/AlterOrder"
 import Header from "./components/Home"
 import Voucher from "./pages/Voucher"
-import Purchase from "./pages/Purchase"
 import DayBook from "./pages/DayBook"
+import Purchase from "./pages/Purchase"
+
 // import TodoForm from "./pages/TodoForm"
 // import ProductSubForm from "./pages/ProductSubForm"
 

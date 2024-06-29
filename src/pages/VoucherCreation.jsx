@@ -19,8 +19,7 @@ const VoucherCreation = () => {
 			approvedQuantity: "",
 			rate: "",
 			discount: "",
-			amount: "",
-			gmaster: "",
+			amount: ""
 		},
 	]);
 	const [createdBy, setCreatedBy] = useState("")

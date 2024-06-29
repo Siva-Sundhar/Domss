@@ -4,45 +4,40 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 const AlterOrder = () => {
 
+	const [voucherType] = useState("Purchase Order");
+	const [distributorName, setDistributorName] = useState("");
+	const [voucherNo, setVoucherNo] = useState("");
+	const [vDate, setVDate] = useState("");
+	const [distributorCode, setDistributorCode] = useState("");
+	const [tableData, setTableData] = useState([
+		{
+			category: "",
+			code: "",
+			description: "",
+			orderQty: "",
+			uom: "",
+			approvedQuantity: "",
+			rate: "",
+			discount: "",
+			amount: "",
+		},
+	]);
+	const [createdBy, setCreatedBy] = useState("")
+	const [approvedBy, setApprovedBy] = useState("")
+	const [narration, setNarration] = useState("");
 
 	const inputRefs = useRef([])
 	const tableRefs = useRef([])
-	const [order, setOrder] = useState({
-	voucherType: 'Sales Order',
-    voucherNo: "",
-    distributorName: "",
-    distributorCode: "",
-    voucherDate: "",
-    createdBy: "",
-    createdDateTime: "",
-    approvedBy: "",
-    approvedDateTime: "",
-    narration: "",
-	orderItems: [{
-		category: "",
-		code: "",
-		description: "",
-		orderQty: "",
-		uom: "",
-		approvedQuantity: "",
-		rate: "",
-		discount: "",
-		amount: "",
-	}]
-	});
+	
 	
 	
 	const {id} = useParams();
 	
 	const handleChange = (e, rowIndex)=>{
 		const {name, value} = e.target;
-		const updatedOrderItems = order.orderItems.map((item, idx)=>
-			idx === rowIndex ? { ...item, [name]: value } : item
-		)
-		setOrder((prevOrder)=>({
-			...prevOrder,
-			orderItems: updatedOrderItems
-		}))
+		const list = [...tableData];
+		list[rowIndex][name] = value;
+		setTableData(list);
 	}
 
 	useEffect(()=>{
@@ -50,9 +45,21 @@ const AlterOrder = () => {
 	},[])
 
 	const loadOrder = async()=>{
-		const res = await axios.get(`http://localhost:8080/orders/getOrder/${id}`)
-		setOrder(res.data)
-		
+		const response = await axios.get(`http://localhost:8080/orders/getOrder/${id}`);
+
+		const order = response.data;
+			setVoucherNo(order.voucherNo);
+			setVDate(order.voucherDate);
+			setDistributorName(order.distributorName);
+			setDistributorCode(order.distributorCode);
+			setTableData(order.orderItems.map((item)=>({
+				...item,
+				approvedQuantity:item.approvedQuantity || "",
+				amount:item.amount || "",
+				})));
+			setCreatedBy(order.createdBy);
+			setApprovedBy(order.approvedBy || "");
+			setNarration(order.narration);
 	}
 
 	const convertDateFormat = (dateString) => {
@@ -68,69 +75,61 @@ const AlterOrder = () => {
 		const { value } = e.target;
 		if (value) {
 
-			const rate = parseFloat(order.orderItems[index].rate)
-			const discountPercent = parseFloat(order.orderItems[index].discount)
+			const rate = parseFloat(tableData[index].rate)
+			const discountPercent = parseFloat(tableData[index].discount)
 			const total = parseFloat(value * rate).toFixed(2);
 			const discount = parseFloat(
 				(total * discountPercent) / 100
 			).toFixed(2);
 			const price = parseFloat(total - discount).toFixed(2);
 
-			const updatedOrderItems = order.orderItems.map((item, idx)=>
-				idx === index ? {...item, amount:price} : item)
-			console.log(price)
-			setOrder((prevOrder)=>({
-				...prevOrder,
-				orderItems: updatedOrderItems
-			}))
-			// order.orderItems[index].amount = price;
-			// setOrder([...order.orderItems]);
+			tableData[index].amount = price;
+			setTableData([...tableData]);
+			
+			
 		}
 	
 	};
 
 	const handleBlur = (e, index) => {
 		const { name, value } = e.target;
-		const list = [...order.orderItems];
+		const list = [...tableData];
 		if (name === "orderQty" || name === "approvedQuantity") {
 			if (!isNaN(value) && value !== "") {
 				list[index][name] = parseFloat(value).toFixed(2);
 			}
 		}
-		setOrder((prevOrder)=>({
-			...prevOrder,
-			orderItems: list
-		}));
+		setTableData(list);
 	};
 
-	// const handleSubmit = async () => {
-	// 	const voucherDate = convertDateFormat(vDate)
-	// 	const orderItems = tableData.filter((item)=>{
-	// 		return item.category !== "♦ End of List" 
-	// 	}
+	const handleSubmit = async () => {
+		const voucherDate =vDate
+		const orderItems = tableData.filter((item)=>{
+			return item.category !== "♦ End of List" 
+		}
 			
-	// 	)
-	// 	try {
-	// 		// Prepare data to send to the server
-	// 		const formData = {
-	// 			voucherType,
-	// 			voucherNo,
-	// 			distributorName,
-	// 			voucherDate,
-	// 			distributorCode,
-	// 			createdBy,
-	// 			approvedBy,
-	// 			narration,
-	// 			orderItems
-	// 		};
-	// 		// Handle response if needed
-	// 		// await axios.put("http://localhost:8080/orders/booking", formData);
-	// 		console.log(formData)
-	// 	} catch (error) {
+		)
+		try {
+			// Prepare data to send to the server
+			const formData = {
+				voucherType,
+				voucherNo,
+				distributorName,
+				voucherDate,
+				distributorCode,
+				createdBy,
+				approvedBy,
+				narration,
+				orderItems
+			};
+			// Handle response if needed
+			await axios.put(`http://localhost:8080/orders/${id}`, formData);
+			// console.log(formData)
+		} catch (error) {
 			
-	// 		console.error("Error:", error);
-	// 	}
-	// };
+			console.error("Error:", error);
+		}
+	};
 
     const handleKeyDown = (e)=>{
 
@@ -139,8 +138,8 @@ const AlterOrder = () => {
 			if(e.target.value !== ""){
 				const userConfirmed = window.confirm("Do you want confirm order");
 				if(userConfirmed)
-					// handleSubmit();
-				console.log(order)
+					handleSubmit();
+				
 			}
 		}
 	}
@@ -160,7 +159,7 @@ const AlterOrder = () => {
 							className="w-36 h-[18px] font-semibold text-[13px] border border-fuchsia-700 outline-0 bg-transparent"
 							id="voucherType"
 						>
-							{order.voucherType}
+							{voucherType}
 						</span>
 					</div>
 					<div className="flex leading-4 py-2 ">
@@ -169,7 +168,7 @@ const AlterOrder = () => {
 						</label>
 						<div className="mr-0.5">:</div>
 						<span className="w-32 border border-fuchsia-700 h-[18px] text-[13px] pl-0.5 bg-transparent outline-0 font-semibold">
-							{order.voucherNo}
+							{voucherNo}
 						</span>
 					</div>
 					<div className="flex leading-4 py-2 px-1">
@@ -178,7 +177,7 @@ const AlterOrder = () => {
 						</label>
 						<div className="mr-0.5">:</div>
 						<span className="w-24 border border-fuchsia-700 h-[18px]  text-[13px] pl-0.5 bg-transparent outline-0 font-semibold">
-							{convertDateFormat(order.voucherDate)}
+							{convertDateFormat(vDate)}
 						</span>
 					</div>
 				</div>
@@ -190,7 +189,7 @@ const AlterOrder = () => {
 						</label>
 						<div className="mr-0.5">:</div>
 						<span className="w-72 border border-fuchsia-700 h-[18px] text-[13px] pl-0.5 bg-transparent outline-0 font-semibold">
-							{order.distributorName}
+							{distributorName}
 						</span>
 					</div>
 
@@ -201,7 +200,7 @@ const AlterOrder = () => {
 						<div className="mr-0.5">:</div>
 
 						<span className="w-24 border border-fuchsia-700 h-[18px] text-[13px] pl-0.5 bg-transparent outline-0 font-semibold">
-							{order.distributorCode}
+							{distributorCode}
 						</span>
 					</div>
 				</div>
@@ -237,13 +236,13 @@ const AlterOrder = () => {
 								<td className="w-[60px] text-center border border-slate-300">
 									Disct %
 								</td>
-								<td className="w-[100px] text-center border border-slate-300">
+								<td className="w-[300px] text-center border border-slate-300">
 									Amount
 								</td>
 							</tr>
 						</thead>
 						<tbody>
-							{order.orderItems.map((data, rowIndex) => (
+							{tableData.map((data, rowIndex) => (
 								<tr key={rowIndex} className=" text-[13px] h-[17px] leading-4">
 									<td className="w-[60px] text-center border border-slate-300 bg-white">
 										{rowIndex + 1}
@@ -271,15 +270,16 @@ const AlterOrder = () => {
 											step="0.01"
 											value={data.approvedQuantity}
 											onChange={(e) => handleChange(e, rowIndex)}
-											ref={(input) =>
-												(tableRefs.current[rowIndex * 9 + 0] = input)
-											}
-											// onKeyDown={(e) => {
-											// 	if (e.key === "Enter" && e.target.value !== "") {
-											// 		tableRefs.current[(rowIndex * 9 + 1) + 0]
-											// 	}
-											// }
-											// }
+											ref={(input) => (tableRefs.current[rowIndex] = input)}
+											onKeyDown={(e) => {
+												if (e.key === "Enter" && e.target.value !== "") {
+													if (rowIndex < tableData.length - 1) {
+														tableRefs.current[rowIndex + 1].focus();
+													} else {
+														inputRefs.current[0].focus();
+													}
+												}
+											}}
 											onBlur={(e) => {
 												handleTotal(e, rowIndex);
 												handleBlur(e, rowIndex);
@@ -293,7 +293,7 @@ const AlterOrder = () => {
 									<td className="w-[60px] text-right pr-0.5 border border-slate-300 bg-white">
 										{data.discount ? `${data.discount} %` : ""}
 									</td>
-									<td className="w-[100px] text-right pr-0.5 border border-slate-300 bg-white">
+									<td className="w-[300px] text-right pr-0.5 border border-slate-300 bg-white">
 										{data.amount
 											? Intl.NumberFormat("en-NG", {
 													style: "currency",
@@ -321,7 +321,7 @@ const AlterOrder = () => {
 							</label>
 							<span className="mr-0.5">:</span>
 							<span className="w-3/5 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold">
-								{order.createdBy}
+								{createdBy}
 							</span>
 						</div>
 
@@ -333,13 +333,15 @@ const AlterOrder = () => {
 							<input
 								autoComplete="off"
 								name="approvedBy"
-								onChange={(e) =>
-									setOrder({ ...order, approvedBy: e.target.value })
-								}
-								value={order.approvedBy}
+								onChange={(e) => setApprovedBy(e.target.value)}
+								value={approvedBy}
 								type="text"
 								ref={(el) => (inputRefs.current[0] = el)}
-								onKeyDown={(e) => e.key === 'Enter' && e.target.value !== "" && inputRefs.current[1].focus()}
+								onKeyDown={(e) =>
+									e.key === "Enter" &&
+									e.target.value !== "" &&
+									inputRefs.current[1].focus()
+								}
 								className="w-3/5 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
 							/>
 						</div>
@@ -351,16 +353,14 @@ const AlterOrder = () => {
 								Narration
 							</label>
 							<span className="mr-0.5">:</span>
-							<textarea
+							<input
 								autoComplete="off"
 								name="narration"
-								value={order.narration}
-								onChange={(e) =>
-									setOrder({ ...order, narration: e.target.value })
-								}
-								rows={1}
+								value={narration}
+								onChange={(e) => setNarration(e.target.value)}
+								onFocus={(e)=>e.target.setSelectionRange(e.target.value.length, e.target.value.length,)}
 								maxLength={75}
-								type=""
+								type="text"
 								onKeyDown={handleKeyDown}
 								ref={(el) => (inputRefs.current[1] = el)}
 								className="w-[89%] border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] resize-none focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"

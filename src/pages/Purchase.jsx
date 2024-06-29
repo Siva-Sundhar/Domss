@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-const Purchase = () => {
+import { useEffect, useRef, useState } from "react";
 
+
+const Purchase = () => {
 
 	const [voucherType] = useState("Purchase Order");
 	const [distributorName, setDistributorName] = useState("");

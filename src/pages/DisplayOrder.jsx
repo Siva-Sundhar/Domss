@@ -2,7 +2,7 @@ import { useState } from 'react';
 // from "react";import axios from "axios";
 const DisplayOrder = () => {
     const [date] = useState("2024-06-20");
-    console.log(date);
+    //console.log(date);
 	const convertDateFormat = (dateString) => {
 		const formattedDate = dateString.replace(/[./]/g, "-");
 		const parts = formattedDate.split("-");
