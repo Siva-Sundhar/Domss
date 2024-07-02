@@ -1,9 +1,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 const AlterOrder = () => {
-
+	const navigate = useNavigate()
 	const [voucherType] = useState("Purchase Order");
 	const [distributorName, setDistributorName] = useState("");
 	const [voucherNo, setVoucherNo] = useState("");
@@ -41,6 +41,19 @@ const AlterOrder = () => {
 	}
 
 	useEffect(()=>{
+		const handleKeyPress = (e)=>{
+			if(e.key === "Escape"){
+				navigate(-1)
+			}
+		}
+	
+		window.addEventListener('keydown', handleKeyPress)
+		return()=>{
+			window.removeEventListener('keydown', handleKeyPress)
+		}
+	},[navigate])
+
+	useEffect(()=>{
 		loadOrder()
 	},[])
 
@@ -52,7 +65,7 @@ const AlterOrder = () => {
 			setVDate(order.voucherDate);
 			setDistributorName(order.distributorName);
 			setDistributorCode(order.distributorCode);
-			setTableData(order.orderItems.map((item)=>({
+			setTableData(order.items.map((item)=>({
 				...item,
 				approvedQuantity:item.approvedQuantity || "",
 				amount:item.amount || "",
@@ -104,7 +117,7 @@ const AlterOrder = () => {
 
 	const handleSubmit = async () => {
 		const voucherDate =vDate
-		const orderItems = tableData.filter((item)=>{
+		const items = tableData.filter((item)=>{
 			return item.category !== "♦ End of List" 
 		}
 			
@@ -120,7 +133,7 @@ const AlterOrder = () => {
 				createdBy,
 				approvedBy,
 				narration,
-				orderItems
+				items
 			};
 			// Handle response if needed
 			await axios.put(`http://localhost:8080/orders/${id}`, formData);
@@ -299,7 +312,7 @@ const AlterOrder = () => {
 													style: "currency",
 													currency: "NGN",
 													minimumFractionDigits: 2,
-											  })
+											})
 													.formatToParts(data.amount)
 													.map(({ type, value }) =>
 														type === "currency" ? `${value} ` : value

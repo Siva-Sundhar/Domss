@@ -7,6 +7,8 @@ import Header from "./components/Home"
 import Voucher from "./pages/Voucher"
 import DayBook from "./pages/DayBook"
 import Purchase from "./pages/Purchase"
+import ReportWithItems from "./pages/ReportWithItems"
+import ReportForAccountry from "./pages/ReportForAccountry"
 
 // import TodoForm from "./pages/TodoForm"
 // import ProductSubForm from "./pages/ProductSubForm"
@@ -33,6 +35,8 @@ const App = () => {
             
           </Route>
           <Route path="daybook" element={<DayBook />} />
+          <Route path="report" element={<ReportForAccountry />} />
+          <Route path="reportItems" element={<ReportWithItems />} />
         </Routes>
       </BrowserRouter>
     </>

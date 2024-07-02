@@ -174,7 +174,7 @@ const VoucherCreation = () => {
 				e.preventDefault();
 					handleSelect(property, options[selectIndex], rowIndex);
 					if(property === 'category' && tableData[rowIndex].category === "♦ End of List"){
-						inputRefs.current[4].focus()
+						inputRefs.current[3].focus()
 						
 					} else {
 						tableRefs.current[rowIndex * 10 + (property === 'category' ? 1 : 2)]?.focus();
@@ -465,7 +465,7 @@ const VoucherCreation = () => {
 					</div>
 				</div>
 				
-				<div className="h-[77vh] w-full overflow-y-scroll pl-1 border">
+				<div className="h-[78vh] w-full overflow-y-scroll pl-1 border">
 					<table className="border-collapse border border-slate-300 ">
 						<thead className=" bg-[#F9F3CC] text-[13px] border border-slate-300 font-semibold sticky top-0">
 							<tr className="h-[17px] leading-4 border border-slate-300">
@@ -675,11 +675,10 @@ const VoucherCreation = () => {
 						</tbody>
 					</table>
 				</div>
-
-				<div className=" px-1 flex flex-col text-[14px] mt-3">
-					<div className="w-[650px] flex justify-between ">
+				<div className=" px-1 flex text-[14px] mt-3 w-full justify-between">
+					<div className="w-[600px] flex justify-between ">
 						<div className="flex leading-4 mb-1 w-[300px]">
-							<label htmlFor="" className="w-[35%]">
+							<label htmlFor="" className="w-[30%]">
 								Created By
 							</label>
 							<span className="mr-0.5">:</span>
@@ -689,14 +688,18 @@ const VoucherCreation = () => {
 								onChange={(e) => setCreatedBy(e.target.value)}
 								value={createdBy}
 								type="text"
-								ref={(el) => (inputRefs.current[4] = el)}
-								onKeyDown={(e) => handleKeyPress(e, 4, null, false)}
-								className="w-3/5 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
+								ref={(el) => (inputRefs.current[3] = el)}
+								onKeyDown={(e) =>
+									e.key === "Enter" &&
+									e.target.value !== "" &&
+									inputRefs.current[3].focus()
+								}
+								className="w-[65%] border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
 							/>
 						</div>
 
 						<div className="flex leading-4 w-[300px]">
-							<label htmlFor="" className="w-[35%]">
+							<label htmlFor="" className="w-[30%]">
 								Approved By
 							</label>
 							<span className="mr-0.5">:</span>
@@ -706,34 +709,39 @@ const VoucherCreation = () => {
 								onChange={(e) => setApprovedBy(e.target.value)}
 								value={approvedBy}
 								type="text"
-								ref={(el) => (inputRefs.current[5] = el)}
-								onKeyDown={(e) => handleKeyPress(e, 5, null, false)}
-								className="w-3/5 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
+								ref={(el) => (inputRefs.current[4] = el)}
+								onKeyDown={(e) =>
+									e.key === "Enter" &&
+									e.target.value !== "" &&
+									inputRefs.current[4].focus()
+								}
+								className="w-[65%] border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
 							/>
 						</div>
 					</div>
 
-					<div className="w-[700px] ">
-						<div className="flex leading-4 mt-1">
-							<label htmlFor="" className="w-[15%]">
+					<div className="w-[550px] ">
+						<div className="flex leading-4 ">
+							<label htmlFor="" className="w-[11%]">
 								Narration
 							</label>
 							<span className="mr-0.5">:</span>
-							<textarea
+							<input
 								autoComplete="off"
 								name="narration"
 								value={narration}
 								onChange={(e) => setNarration(e.target.value)}
-								rows={2}
-								maxLength={150}
-								type=""
+								onFocus={(e)=>e.target.setSelectionRange(e.target.value.length, e.target.value.length,)}
+								maxLength={75}
+								type="text"
 								onKeyDown={handleKeyDown}
-								ref={(el) => (inputRefs.current[6] = el)}
-								className="w-[76%] border border-fuchsia-700 h-[34px] focus:bg-[#fee8af] resize-none focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
+								ref={(el) => (inputRefs.current[5] = el)}
+								className="w-[89%] border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] resize-none focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
 							/>
 						</div>
 					</div>
 				</div>
+				
 			</form>
 		</>
 	);

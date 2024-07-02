@@ -1,9 +1,7 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 
-
 const Purchase = () => {
-
 	const [voucherType] = useState("Purchase Order");
 	const [distributorName, setDistributorName] = useState("");
 	const [voucherNo, setVoucherNo] = useState("");
@@ -15,10 +13,10 @@ const Purchase = () => {
 			code: "",
 			description: "",
 			orderQty: "",
-			uom: ""
+			uom: "",
 		},
 	]);
-	const [createdBy, setCreatedBy] = useState("")
+	const [createdBy, setCreatedBy] = useState("");
 	const [narration, setNarration] = useState("");
 
 	const [category] = useState([
@@ -32,23 +30,26 @@ const Purchase = () => {
 		"Luxury Perfume",
 		"Soap",
 	]);
-	const [distributorData, setDistributorData] = useState([])
+	const [distributorData, setDistributorData] = useState([]);
 	const [productData, setProductData] = useState([]);
 	const [prodFilter, setProdFilter] = useState([]);
-	const [showDistributor, setShowDistributor] = useState(false)
+	const [showDistributor, setShowDistributor] = useState(false);
 	const [showProdList, setShowProdList] = useState(false);
 	const [showList, setShowList] = useState(false);
 	const [filteredOption, setFilteredOption] = useState(category);
 	const [selectIndexCat, setSelectIndexCat] = useState(0);
 	const [selectIndexProd, setSelectIndexProd] = useState(0);
 	const [selectIndex, setSelectIndex] = useState(0);
-	const [selectIndexDist, setSelectIndexDist] = useState(0)
+	const [selectIndexDist, setSelectIndexDist] = useState(0);
 
 	const inputRefs = useRef([]);
 	const listRefs = useRef([]);
-	const tableRefs = useRef([])
+	const tableRefs = useRef([]);
 
-	const filterDisplay = tableData.length > 1 ? ["♦ End of List",...filteredOption] : filteredOption;
+	const filterDisplay =
+		tableData.length > 1
+			? ["♦ End of List", ...filteredOption]
+			: filteredOption;
 
 	useEffect(() => {
 		loadCategory();
@@ -60,26 +61,27 @@ const Purchase = () => {
 		setProductData(response.data);
 	};
 
-	const loadRegion = async ()=>{
-		const response = await axios.get("http://localhost:8080/regionMaster/getRegion")
+	const loadRegion = async () => {
+		const response = await axios.get(
+			"http://localhost:8080/regionMaster/getRegion"
+		);
 
 		setDistributorData(response.data);
-	}
+	};
 
 	useEffect(() => {
 		if (selectIndex >= 0 && listRefs.current[selectIndex]) {
 			listRefs.current[selectIndex].scrollIntoView({
 				behavior: "auto",
 				block: "end",
-				inline: "nearest"
+				inline: "nearest",
 			});
-			
-		}else if(selectIndexDist >= 0 && listRefs.current[selectIndexDist]){
+		} else if (selectIndexDist >= 0 && listRefs.current[selectIndexDist]) {
 			listRefs.current[selectIndexDist].scrollIntoView({
 				behavior: "auto",
 				block: "end",
-				inline: "nearest"
-				});
+				inline: "nearest",
+			});
 		}
 	}, [selectIndex, selectIndexDist]);
 
@@ -97,11 +99,10 @@ const Purchase = () => {
 			newTableData[index][property] = item;
 			setTableData(newTableData);
 			setShowList(false);
-			if(item !=="♦ End of List"){
+			if (item !== "♦ End of List") {
 				handleFilter(item);
-				setShowProdList(true);	
-			}		
-			
+				setShowProdList(true);
+			}
 		} else if (property === "code") {
 			const option = item;
 			newTableData[index].code = option.productCode;
@@ -114,24 +115,27 @@ const Purchase = () => {
 		}
 	};
 
-	const handleDistributorSelect = (e)=>{
-		if(selectIndexDist < distributorData.length){
-			if(e.key === "ArrowUp" && selectIndexDist > 0){
+	const handleDistributorSelect = (e) => {
+		if (selectIndexDist < distributorData.length) {
+			if (e.key === "ArrowUp" && selectIndexDist > 0) {
 				setSelectIndexDist((prev) => prev - 1);
-			} else if(e.key === "ArrowDown" && selectIndexDist < distributorData.length - 1){
+			} else if (
+				e.key === "ArrowDown" &&
+				selectIndexDist < distributorData.length - 1
+			) {
 				setSelectIndexDist((prev) => prev + 1);
-			} else if(e.key === "Enter" && selectIndexDist >= 0){
+			} else if (e.key === "Enter" && selectIndexDist >= 0) {
 				handleDistributor(distributorData[selectIndexDist]);
-				setShowDistributor(false)
+				setShowDistributor(false);
 				tableRefs.current[0].focus();
 			}
 		}
-	}
-	
-	const handleDistributor = (item)=>{
-		setDistributorName(item.ledgerName)
-		setDistributorCode(item.ledgerCode)
-	}
+	};
+
+	const handleDistributor = (item) => {
+		setDistributorName(item.ledgerName);
+		setDistributorCode(item.ledgerCode);
+	};
 
 	// const handleTotal = (e, index) => {
 	// 	const { value } = e.target;
@@ -147,7 +151,6 @@ const Purchase = () => {
 	// };
 
 	const handleKeySelect = (e, rowIndex, options, property) => {
-		
 		if (selectIndex < options.length) {
 			if (e.key === "ArrowUp" && selectIndex > 0) {
 				if (property === "category") {
@@ -167,13 +170,17 @@ const Purchase = () => {
 				}
 			} else if (e.key === "Enter" && selectIndexCat >= 0) {
 				e.preventDefault();
-					handleSelect(property, options[selectIndex], rowIndex);
-					if(property === 'category' && tableData[rowIndex].category === "♦ End of List"){
-						inputRefs.current[3].focus()
-						
-					} else {
-						tableRefs.current[rowIndex * 5 + (property === 'category' ? 1 : 2)]?.focus();
-					}
+				handleSelect(property, options[selectIndex], rowIndex);
+				if (
+					property === "category" &&
+					tableData[rowIndex].category === "♦ End of List"
+				) {
+					inputRefs.current[3].focus();
+				} else {
+					tableRefs.current[
+						rowIndex * 5 + (property === "category" ? 1 : 2)
+					]?.focus();
+				}
 			} else if (e.key === "Tab") {
 				e.preventDefault();
 			}
@@ -184,14 +191,13 @@ const Purchase = () => {
 
 	const handleFocus = (property) => {
 		if (property === "category") {
-			setSelectIndex(selectIndexCat)
+			setSelectIndex(selectIndexCat);
 			setShowList(true);
 		}
 		if (property === "code") {
 			setSelectIndex(selectIndexProd);
 			setShowProdList(true);
 		}
-
 	};
 
 	const handleChange = (e, index) => {
@@ -215,7 +221,6 @@ const Purchase = () => {
 			);
 			setProdFilter(filteredList);
 		}
-		
 	};
 
 	const handleBlur = (e, index) => {
@@ -239,20 +244,18 @@ const Purchase = () => {
 					nextField < tableRefs.current.length &&
 					tableRefs.current[nextField]
 				) {
-					
 					tableRefs.current[nextField].focus();
-					
 				} else {
-					if (rowIndex === tableData.length - 1){
-                        addRow();
-                    } else {
+					if (rowIndex === tableData.length - 1) {
+						addRow();
+					} else {
 						tableRefs.current[(rowIndex + 1) * 5].focus();
 					}
 				}
 			} else {
 				const fieldIndex = rowIndex + 1;
 				if (fieldIndex < inputRefs.current.length) {
-						inputRefs.current[fieldIndex]?.focus();
+					inputRefs.current[fieldIndex]?.focus();
 					// console.log(tableRefs)
 				}
 			}
@@ -267,19 +270,17 @@ const Purchase = () => {
 				code: "",
 				description: "",
 				orderQty: "",
-				uom:""
+				uom: "",
 			},
 		]);
-		setTimeout(()=>{
-            
+		setTimeout(() => {
 			const newRowIndex = tableData.length;
-            console.log(newRowIndex*5)
-			tableRefs.current[newRowIndex * 5].focus()
-			setFilteredOption(category)
-
-		},0)
+			console.log(newRowIndex * 5);
+			tableRefs.current[newRowIndex * 5].focus();
+			setFilteredOption(category);
+		}, 0);
 	};
-	
+
 	const convertDateFormat = (dateString) => {
 		const formattedDate = dateString.replace(/[./]/g, "-");
 
@@ -294,12 +295,10 @@ const Purchase = () => {
 	};
 
 	const handleSubmit = async () => {
-		const voucherDate = convertDateFormat(vDate)
-		const orderItems = tableData.filter((item)=>{
-			return item.category !== "♦ End of List" 
-		}
-			
-		)
+		const voucherDate = convertDateFormat(vDate);
+		const items = tableData.filter((item) => {
+			return item.category !== "♦ End of List";
+		});
 		try {
 			// Prepare data to send to the server
 			const formData = {
@@ -310,38 +309,32 @@ const Purchase = () => {
 				distributorCode,
 				createdBy,
 				narration,
-				orderItems
+				items,
 			};
 			// Handle response if needed
 			await axios.post("http://localhost:8080/orders/booking", formData);
-			console.log(formData)
+			console.log(formData);
 		} catch (error) {
-			
 			console.error("Error:", error);
 		}
 	};
 
-	const handleKeyDown = (e)=>{
-
-		if(e.key === 'Enter'){
+	const handleKeyDown = (e) => {
+		if (e.key === "Enter") {
 			e.preventDefault();
-			if(e.target.value !== ""){
+			if (e.target.value !== "") {
 				const userConfirmed = window.confirm("Do you want confirm order");
-				if(userConfirmed)
-					handleSubmit();
+				if (userConfirmed) handleSubmit();
 			}
 		}
-	}
+	};
 	return (
 		<>
-			<form
-				className=" h-screen relative bg-[#fff4fc]"
-				onSubmit={handleSubmit}
-			>
+			<form className=" h-screen relative bg-[#fff4fc]" onSubmit={handleSubmit}>
 				<div className="flex justify-between ">
 					<div className="flex leading-4 py-2 px-1">
 						<label htmlFor="voucherType" className="w-28 text-[14px] ">
-						Voucher Type
+							Voucher Type
 						</label>
 						<div className="mr-0.5">:</div>
 
@@ -437,9 +430,8 @@ const Purchase = () => {
 							Godown Master
 						</label>
 						<div className="mr-0.5">:</div>
-						<input	
+						<input
 							autoComplete="off"
-							
 							name="godownMaster"
 							// value={voucherNo}
 							type="text"
@@ -458,7 +450,7 @@ const Purchase = () => {
 						</span>
 					</div>
 				</div>
-				
+
 				<div className="h-[77vh] w-full overflow-y-scroll pl-1 border">
 					<table className="border-collapse border border-slate-300 ">
 						<thead className=" bg-[#F9F3CC] text-[13px] border border-slate-300 font-semibold sticky top-0">
@@ -481,7 +473,6 @@ const Purchase = () => {
 								<td className="w-[50px] text-center border border-slate-300">
 									Uom
 								</td>
-								
 							</tr>
 						</thead>
 						<tbody>
@@ -571,7 +562,6 @@ const Purchase = () => {
 															key={prodIndex}
 															onClick={() =>
 																handleSelect("code", prod, rowIndex)
-                                                                
 															}
 															ref={(el) => (listRefs.current[prodIndex] = el)}
 															className={`cursor-pointer ${
@@ -615,17 +605,16 @@ const Purchase = () => {
 									<td className="w-[50px] text-center border border-slate-300 bg-white ">
 										{data.uom}
 									</td>
-									
 								</tr>
 							))}
 						</tbody>
 					</table>
 				</div>
 
-				<div className=" px-1 flex flex-col text-[14px] mt-3">
-					<div className="w-[650px] flex justify-between ">
+				<div className=" px-1 text-[14px] mt-3 w-full">
+					<div className="flex ">
 						<div className="flex leading-4 mb-1 w-[300px]">
-							<label htmlFor="" className="w-[35%]">
+							<label htmlFor="" className="w-[30%]">
 								Created By
 							</label>
 							<span className="mr-0.5">:</span>
@@ -636,31 +625,38 @@ const Purchase = () => {
 								value={createdBy}
 								type="text"
 								ref={(el) => (inputRefs.current[3] = el)}
-								onKeyDown={(e) => handleKeyPress(e, 3, null, false)}
-								className="w-3/5 border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
+								onKeyDown={(e) =>
+									e.key === "Enter" &&
+									e.target.value !== "" &&
+									inputRefs.current[4].focus()
+								}
+								className="w-[65%] border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
 							/>
 						</div>
-
-					</div>
-
-					<div className="w-[700px] ">
-						<div className="flex leading-4 mt-1">
-							<label htmlFor="" className="w-[15%]">
-								Narration
-							</label>
-							<span className="mr-0.5">:</span>
-							<textarea
-								autoComplete="off"
-								name="narration"
-								value={narration}
-								onChange={(e) => setNarration(e.target.value)}
-								rows={2}
-								maxLength={150}
-								type=""
-								onKeyDown={handleKeyDown}
-								ref={(el) => (inputRefs.current[4] = el)}
-								className="w-[76%] border border-fuchsia-700 h-[34px] focus:bg-[#fee8af] resize-none focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
-							/>
+						<div className="w-[610px] ">
+							<div className="flex leading-4 ">
+								<label htmlFor="" className="w-[10%]">
+									Narration
+								</label>
+								<span className="mr-0.5">:</span>
+								<input
+									autoComplete="off"
+									name="narration"
+									value={narration}
+									onChange={(e) => setNarration(e.target.value)}
+									onFocus={(e) =>
+										e.target.setSelectionRange(
+											e.target.value.length,
+											e.target.value.length
+										)
+									}
+									maxLength={75}
+									type="text"
+									onKeyDown={handleKeyDown}
+									ref={(el) => (inputRefs.current[4] = el)}
+									className="w-[81%] border border-fuchsia-700 h-[18px] focus:bg-[#fee8af] resize-none focus:border-blue-500 text-[13px] pl-0.5 bg-transparent outline-0 font-semibold"
+								/>
+							</div>
 						</div>
 					</div>
 				</div>

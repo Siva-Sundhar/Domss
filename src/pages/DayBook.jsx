@@ -6,8 +6,8 @@ const DayBook = () => {
 	const navigate = useNavigate();
 	const listRefs = useRef([]);
 	const [selectIndex, setSelectIndex] = useState(0);
-	const [orders, setOrders] = useState([{}]);
-
+	const [orders, setOrders] = useState([]);
+	console.log(orders)
 	useEffect(() => {
 		const handleKeyDown = (ev) => {
 			if (ev.key === "Escape") {
