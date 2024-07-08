@@ -44,6 +44,7 @@ const Purchase = () => {
 
 	const inputRefs = useRef([]);
 	const listRefs = useRef([]);
+	const distListRef = useRef([])
 	const tableRefs = useRef([]);
 
 	const filterDisplay =
@@ -76,8 +77,8 @@ const Purchase = () => {
 				block: "end",
 				inline: "nearest",
 			});
-		} else if (selectIndexDist >= 0 && listRefs.current[selectIndexDist]) {
-			listRefs.current[selectIndexDist].scrollIntoView({
+		} else if (selectIndexDist >= 0 && distListRef.current[selectIndexDist]) {
+			distListRef.current[selectIndexDist].scrollIntoView({
 				behavior: "auto",
 				block: "end",
 				inline: "nearest",
@@ -414,7 +415,7 @@ const Purchase = () => {
 												handleDistributor(item);
 												inputRefs.current[0].focus();
 											}}
-											ref={(el) => (listRefs.current[index] = el)}
+											ref={(el) => (distListRef.current[index] = el)}
 										>
 											<>
 												{item.ledgerCode} - {item.ledgerName}

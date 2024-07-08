@@ -9,6 +9,8 @@ import DayBook from "./pages/DayBook"
 import Purchase from "./pages/Purchase"
 import ReportWithItems from "./pages/ReportWithItems"
 import ReportForAccountry from "./pages/ReportForAccountry"
+import OtpVerify from "./others/OtpVerify"
+import Registration from "./others/Registration"
 
 // import TodoForm from "./pages/TodoForm"
 // import ProductSubForm from "./pages/ProductSubForm"
@@ -24,7 +26,9 @@ const App = () => {
       <BrowserRouter>
         
         <Routes>
-          <Route path="/" element={<Header />} />
+          <Route path="/" element={<Registration />} />
+          <Route path="/verify" element={<OtpVerify />} />
+          {/* <Route path="/" element={<Header />} /> */}
           <Route path="display" element={<DisplayOrder />} />
           <Route path="/alterOrder/:id" element={<AlterOrder />} />
 
