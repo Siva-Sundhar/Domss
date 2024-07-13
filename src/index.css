@@ -2,24 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-::-webkit-scrollbar {
-    width: 5px;
-    height: 10px;
+.input-grp{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 4px;
 }
-/* Track */
-::-webkit-scrollbar-track {
-    background: #fff;
-}
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background: #2a47b1;
-}
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-@layer base {
-    html {
-        font-family:  Helvetica, sans-serif;
-    }
-}
+
